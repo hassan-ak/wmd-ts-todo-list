@@ -48,6 +48,7 @@
   },
   "bin": "./dist/index.js",
   ```
+
 ### 2. Install dependencies
 
 - Multiple third-party packages to be used in this project so install different dependacies using following commands
@@ -78,3 +79,28 @@
   package-lock.json
   Todos.json
   ```
+
+### 3. Create Hello World
+
+- To check if everything is setup properly first create a hello world. All the typescript files should be created in `./src` directory. Create a `index.ts` file with the following content
+
+  ```ts
+  console.log('Hello World!');
+  ```
+
+- To transpile the code to javascript we can use any of the following command, one thing to rember we need to use first command every time we make a change and the second one automatically create js files on every change. So we are going to use the latter one. All the js files will be stored in the `./dist` folder as we declared in our `tsconfig.json` file earlier.
+
+  ```cmd
+  tsc
+  tsc -w
+  ```
+
+- to run the js file we can use any of the following commands
+
+  ```cmd
+  node .\dist\index.js
+  node .
+  npm start
+  ```
+
+- If everything is right we will have a console output.
