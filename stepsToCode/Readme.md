@@ -104,3 +104,42 @@
   ```
 
 - If everything is right we will have a console output.
+
+### 4. Create App title and ShutDown Animation
+
+- create `./message/title.ts` to display app title
+
+  ```ts
+  import showBanner from 'node-banner';
+  async function title(): Promise<true> {
+    console.clear();
+    return await new Promise<true>(async (resolve) => {
+      await showBanner(`Todo ' s`, '\t   CLI Todo App', 'blue', 'yellow');
+      console.log('');
+      resolve(true);
+    });
+  }
+  export { title };
+  ```
+
+- create `./message/shutDown.ts` to create an animation before quiting the app
+
+  ```ts
+  import chalk from 'chalk';
+  import ora, { Ora } from 'ora';
+  function shutDown(): Promise<true> {
+    return new Promise<true>((resolve) => {
+      console.log('');
+      const spinner: Ora = ora(chalk.red(' Shutting Down '));
+      spinner.spinner = 'triangle';
+      spinner.color = 'red';
+      spinner.start();
+      setTimeout(() => {
+        spinner.stop();
+        console.clear();
+        resolve(true);
+      }, 1000);
+    });
+  }
+  export { shutDown };
+  ```
