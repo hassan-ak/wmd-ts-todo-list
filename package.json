@@ -23,5 +23,18 @@
   "bugs": {
     "url": "https://github.com/hassan-ak/wmd-ts-todo-list/issues"
   },
-  "homepage": "https://github.com/hassan-ak/wmd-ts-todo-list#readme"
+  "homepage": "https://github.com/hassan-ak/wmd-ts-todo-list#readme",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "cli-table": "^0.3.11",
+    "lowdb": "^5.0.5",
+    "node-banner": "^1.4.0",
+    "ora": "^6.1.2"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/cli-table": "^0.3.1",
+    "@types/lowdb": "^1.0.11",
+    "@types/ora": "^3.2.0"
+  }
 }
