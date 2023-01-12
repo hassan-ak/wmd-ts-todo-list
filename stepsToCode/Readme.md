@@ -310,3 +310,86 @@
   let showCompleted = new ShowCompleted();
   export { collection, showCompleted };
   ```
+
+### 7. Create Operations
+
+- Create `operations/addTodos.ts` to call function for adding todos to the list
+
+  ```ts
+  import inquirer from 'inquirer';
+  import { collection } from '../dataModules/collections.js';
+  async function addTodo(): Promise<void> {
+    console.log('');
+    await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'add',
+        message: 'Enter new Todo:',
+        validate(input) {
+          if (input !== '') {
+            collection.addTodo(input);
+            return true;
+          } else {
+            return 'Enter some valid todo';
+          }
+        },
+      },
+    ]);
+  }
+  export { addTodo };
+  ```
+
+- Create `operations/changeStatus.ts` to call function for changing status of a todo
+
+  ```ts
+  import inquirer from 'inquirer';
+  import { collection } from '../dataModules/collections.js';
+  async function changeStatus(): Promise<void> {
+    console.log('');
+    await inquirer
+      .prompt([
+        {
+          type: 'checkbox',
+          name: 'status',
+          message: 'Toggle todo status',
+          choices: collection.getTodoItems(true).map((item) => ({
+            name: item.todo,
+            value: item.id,
+            checked: item.complete,
+          })),
+        },
+      ])
+      .then((answers) => {
+        let selectedTasks = answers['status'] as number[];
+        collection
+          .getTodoItems(true)
+          .forEach((item) =>
+            collection.changeStatus(
+              item.id,
+              selectedTasks.find((id) => id === item.id) != undefined
+            )
+          );
+      });
+  }
+  export { changeStatus };
+  ```
+
+- Create `operations/removeCompleted.ts` to call function for removing completed todos
+
+  ```ts
+  import { collection } from '../dataModules/collections.js';
+  async function removeCompleted(): Promise<void> {
+    collection.removeComplete();
+  }
+  export { removeCompleted };
+  ```
+
+- Create `operations/toggleDisplay.ts` to call function for toggling display
+
+  ```ts
+  import { showCompleted } from '../dataModules/collections.js';
+  async function toggleDisplay(): Promise<void> {
+    showCompleted.show = !showCompleted.show;
+  }
+  export { toggleDisplay };
+  ```
