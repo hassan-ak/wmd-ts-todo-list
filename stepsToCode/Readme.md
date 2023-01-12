@@ -55,11 +55,11 @@
 
   ```cmd
   npm install ora
-  npm install lowdb
   npm install chalk
   npm install inquirer
   npm install cli-table
   npm install node-banner
+  npm install lowdb@1.0.0
   ```
 
 - Install types for the installed dependancies for the development using following set of commands
@@ -170,4 +170,143 @@
     return response.response;
   }
   export { optionSelection };
+  ```
+
+### 6. Create data Modules
+
+- create `./dataModules/todoItem.ts` to create a todo item class
+
+  ```ts
+  class TodoItem {
+    public constructor(
+      public id: number,
+      public todo: string,
+      public complete: boolean = false
+    ) {}
+  }
+  export { TodoItem };
+  ```
+
+- create `./dataModules/todoCollection.ts` to create a todo collection
+
+  ```ts
+  import { TodoItem } from './todoItem.js';
+  type ItemCounts = {
+    total: number;
+    incomplete: number;
+    complete: number;
+  };
+  class TodoCollection {
+    private nextId: number = 1;
+    protected itemMap = new Map<number, TodoItem>();
+    constructor(public todoItems: TodoItem[] = []) {
+      todoItems.forEach((item) => this.itemMap.set(item.id, item));
+    }
+    getTodoById(id: number): TodoItem | undefined {
+      return this.itemMap.get(id);
+    }
+    addTodo(todo: string): number {
+      while (this.getTodoById(this.nextId)) {
+        this.nextId++;
+      }
+      this.itemMap.set(this.nextId, new TodoItem(this.nextId, todo));
+      return this.nextId;
+    }
+    getTodoItems(includeComplete: boolean): TodoItem[] {
+      return [...this.itemMap.values()].filter(
+        (item) => includeComplete || !item.complete
+      );
+    }
+    changeStatus(id: number, complete: boolean): void {
+      const todoItem = this.getTodoById(id);
+      if (todoItem) {
+        todoItem.complete = complete;
+      }
+    }
+    removeComplete(): void {
+      this.itemMap.forEach((item) => {
+        if (item.complete) {
+          this.itemMap.delete(item.id);
+        }
+      });
+    }
+    getItemCounts(): ItemCounts {
+      return {
+        total: this.itemMap.size,
+        incomplete: this.getTodoItems(false).length,
+        complete: this.itemMap.size - this.getTodoItems(false).length,
+      };
+    }
+  }
+  export { TodoCollection };
+  ```
+
+- create `./dataModules/jsonTodoCollection.ts` to intract with the database
+
+  ```ts
+  import * as lowdb from 'lowdb';
+  import { TodoItem } from './todoItem.js';
+  import { TodoCollection } from './todoCollection.js';
+  import * as FileSync from 'lowdb/adapters/FileSync.js';
+  type schemaType = {
+    todos: { id: number; todo: string; complete: boolean }[];
+  };
+  class JsonTodoCollection extends TodoCollection {
+    private database: lowdb.LowdbSync<schemaType>;
+    constructor(todoItems: TodoItem[] = []) {
+      super([]);
+      this.database = lowdb.default(new FileSync.default('Todo.json'));
+      if (this.database.has('todos').value()) {
+        let dbItems = this.database.get('todos').value();
+        dbItems.forEach((item) =>
+          this.itemMap.set(
+            item.id,
+            new TodoItem(item.id, item.todo, item.complete)
+          )
+        );
+      } else {
+        this.database.set('todos', todoItems).write();
+        todoItems.forEach((item) => this.itemMap.set(item.id, item));
+      }
+    }
+    private storetodos() {
+      this.database.set('todos', [...this.itemMap.values()]).write();
+    }
+    addTodo(todo: string): number {
+      let result = super.addTodo(todo);
+      this.storetodos();
+      return result;
+    }
+    changeStatus(id: number, complete: boolean): void {
+      super.changeStatus(id, complete);
+      this.storetodos();
+    }
+    removeComplete(): void {
+      super.removeComplete();
+      this.storetodos();
+    }
+  }
+  export { JsonTodoCollection };
+  ```
+
+- create `./dataModules/status.ts` to define status class
+
+  ```ts
+  class ShowCompleted {
+    show: boolean = true;
+  }
+  export { ShowCompleted };
+  ```
+
+- create `./dataModules/collectios.ts` to create instances of classes to be used in the app
+
+  ```ts
+  import { TodoItem } from './todoItem.js';
+  import { ShowCompleted } from './status.js';
+  import { TodoCollection } from './todoCollection.js';
+  import { JsonTodoCollection } from './jsonTodoCollection.js';
+  let todos: TodoItem[] = [];
+  let collection: TodoCollection = new JsonTodoCollection(todos);
+  let showCompleted = new ShowCompleted();
+  export { collection, showCompleted };
   ```
