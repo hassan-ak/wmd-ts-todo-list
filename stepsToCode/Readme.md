@@ -77,7 +77,7 @@
   ```gitignore
   node_modules
   package-lock.json
-  Todos.json
+  Todo.json
   ```
 
 ### 3. Create Hello World
@@ -488,4 +488,32 @@
     }
   }
   todos();
+  ```
+
+### 9. Publish as NPX package
+
+- login to npm
+
+  ```cmd
+  npm login
+  ```
+
+- publish app
+
+  ```cmd
+  npm publish
+  ```
+
+- to update
+
+  ```cmd
+  npm version <type>
+  ```
+
+- version types
+
+  ```
+  patch
+  minor
+  major
   ```
