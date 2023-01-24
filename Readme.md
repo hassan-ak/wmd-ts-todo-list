@@ -35,6 +35,10 @@ This project is published as an [npm package](https://www.npmjs.com/package/wmd-
   - Remove completed todos
   - Quit App
 
-## Steps to code CLI word counter
+## Demo
+
+[<img src="todo.PNG" width="75%">](https://youtu.be/2UL1xglz1t4 'CLI Todo List')
+
+## Steps to code CLI Todo List
 
 All the details to code this app is given [here](https://github.com/hassan-ak/wmd-ts-todo-list/tree/main/stepsToCode/Readme.md).
